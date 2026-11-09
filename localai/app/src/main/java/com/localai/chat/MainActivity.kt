@@ -166,17 +166,17 @@ class MainActivity : Activity() {
     private fun buildPrompt(question: String): String {
         val sb = StringBuilder()
         for ((q, a) in turns.takeLast(2)) {
-            sb.append("<start_of_turn>user\\n").append(q).append("<end_of_turn>\\n")
-            sb.append("<start_of_turn>model\\n").append(a.take(500)).append("<end_of_turn>\\n")
+            sb.append("<start_of_turn>user\n").append(q).append("<end_of_turn>\n")
+            sb.append("<start_of_turn>model\n").append(a.take(500)).append("<end_of_turn>\n")
         }
-        sb.append("<start_of_turn>user\\n")
+        sb.append("<start_of_turn>user\n")
         val ctx = kb.search(question, 3)
         if (ctx.isNotEmpty()) {
-            sb.append("Используй эти заметки для ответа, если они относятся к вопросу:\\n")
-            ctx.forEachIndexed { i, c -> sb.append("[${i + 1}] ${c.text}\\n") }
-            sb.append("\\nВопрос: ")
+            sb.append("Используй эти заметки для ответа, если они относятся к вопросу:\n")
+            ctx.forEachIndexed { i, c -> sb.append("[${i + 1}] ${c.text}\n") }
+            sb.append("\nВопрос: ")
         }
-        sb.append(question).append("<end_of_turn>\\n<start_of_turn>model\\n")
+        sb.append(question).append("<end_of_turn>\n<start_of_turn>model\n")
         return sb.toString()
     }
 
@@ -186,7 +186,7 @@ class MainActivity : Activity() {
         if (text.isEmpty()) return
         input.setText("")
         send.isEnabled = false
-        log.append("Ты: $text\\n\\nИИ: …\\n\\n")
+        log.append("Ты: $text\n\nИИ: …\n\n")
         scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
         val prompt = buildPrompt(text)
         thread {
@@ -197,7 +197,7 @@ class MainActivity : Activity() {
             }
             turns.add(text to answer)
             ui.post {
-                log.text = log.text.toString().removeSuffix("…\\n\\n") + answer + "\\n\\n"
+                log.text = log.text.toString().removeSuffix("…\n\n") + answer + "\n\n"
                 scroll.post { scroll.fullScroll(ScrollView.FOCUS_DOWN) }
                 send.isEnabled = true
             }
